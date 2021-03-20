@@ -1,0 +1,36 @@
+wget http://files.grouplens.org/datasets/movielens/ml-1m.zip
+unzip ml-1m.zip
+
+cat ml-1m/ratings.dat | sed 's/::/,/g' | cut -f1-3 -d, > ratings.csv
+
+hadoop fs -put ratings.csv /ratings.csv
+
+mahout recommenditembased --input /ratings.csv --output recommendations --numRecommendations 10 --outputPathForSimilarityMatrix similarity-matrix --similarityClassname SIMILARITY_COSINE
+
+hadoop fs -ls recommendations
+
+hadoop fs -cat recommendations/part-r-00000 | head
+
+sudo pip3 install twisted
+sudo pip3 install klein
+sudo pip3 install redis
+
+wget http://download.redis.io/releases/redis-2.8.7.tar.gz
+tar xzf redis-2.8.7.tar.gz
+cd redis-2.8.7
+vi redis.conf
+
+// set working diractory as uses home and save in redis.conf. then save and exit vi editor
+dir ~/
+
+make
+./src/redis-server &
+
+cd ..
+
+//Copy content from hello.py and save below
+vi hello.py
+
+twistd -noy hello.py &
+
+curl localhost:8081/37
